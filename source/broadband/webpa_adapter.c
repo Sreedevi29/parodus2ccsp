@@ -606,11 +606,25 @@ WDMP_STATUS validate_parameter(param_t *param, int paramCount, REQ_TYPE type)
                 {
                         return WDMP_ERR_INVALID_PARAM;
                 }
-
-                if(strlen(param[i].value) >= MAX_PARAMETERVALUE_LEN)
+		//Increase parameter value to 200k for T2 ReportProfiles
+		if(strcmp(param[i].name, "Device.X_RDKCENTRAL-COM_T2.ReportProfiles") == 0) 
                 {
-                        return WDMP_ERR_INVALID_PARAM;
+			WalInfo("----SET/SET-ATTRIBUTES for T2 Report Profiles-----\n");
+                        if(strlen(param[i].value) >= MAX_TELEMETRY_PARAMETERVALUE_LEN)
+			{
+			WalError("T2 reportProfiles SET/SET-ATTRIBUTES is not supported as string size is more than 200k\n");
+			return WDMP_ERR_INVALID_PARAM;
+			}
                 }
+		else
+		{
+			WalInfo("----SET/SET-ATTRIBUTES for Other than T2-----\n");
+                	if(strlen(param[i].value) >= MAX_PARAMETERVALUE_LEN)
+                	{
+			WalError("SET/SET-ATTRIBUTES is not supported as string size is more than 4k \n");
+                        return WDMP_ERR_INVALID_PARAM;
+                	}
+		}
 
                 // If input parameter is wildcard ending with "." then send error as wildcard is not supported for TEST_AND_SET
                 if(param[i].name[(strlen(param[i].name)-1)] == '.')
