@@ -78,16 +78,16 @@ void processRequest(char *reqPayload,char *transactionId, char **resPayload)
                 
                         case GET:
                         {
-                                WalPrint("Request:> ParamCount = %zu\n",reqObj->u.getReq->paramCnt);
+                                WalInfo("Request:> ParamCount = %zu\n",reqObj->u.getReq->paramCnt);
                                 resObj->paramCnt = reqObj->u.getReq->paramCnt;
-                                WalPrint("Response:> paramCnt = %zu\n", resObj->paramCnt);
+                                WalInfo("Response:> paramCnt = %zu\n", resObj->paramCnt);
                                 resObj->retStatus = (WDMP_STATUS *) malloc(sizeof(WDMP_STATUS)*resObj->paramCnt);
                                 resObj->timeSpan = NULL;
                                 paramCount = (int)reqObj->u.getReq->paramCnt;
                                 
                                 for (i = 0; i < paramCount; i++) 
                                 {
-                                        WalPrint("Request:> paramNames[%d] = %s\n",i,reqObj->u.getReq->paramNames[i]);
+                                        WalInfo("Request:> paramNames[%d] = %s\n",i,reqObj->u.getReq->paramNames[i]);
                                         param = reqObj->u.getReq->paramNames[i];
                                         if(strlen(param) >= MAX_PARAMETERNAME_LEN)
                                         {
@@ -122,7 +122,7 @@ void processRequest(char *reqPayload,char *transactionId, char **resPayload)
 
                                     if (0 < nonWildcardParamCount) { 
                                         getValues(getParamList, nonWildcardParamCount, index, resObj->timeSpan, &resObj->u.getRes->params, &retCount, &ret);
-                                        WalPrint("Non-Wildcard retCount : %d ret : %d\n",retCount, ret);
+                                        WalInfo("Non-Wildcard retCount : %d ret : %d\n",retCount, ret);
                                         for(i = 0; i < nonWildcardParamCount; i++)
                                         {       
                                                 resObj->u.getRes->paramNames[i] = getParamList[i];
@@ -131,14 +131,15 @@ void processRequest(char *reqPayload,char *transactionId, char **resPayload)
                                                 WalPrint("Response:> retParamCnt[%d] = %zu\n",i,resObj->u.getRes->retParamCnt[i]);
                                                 resObj->retStatus[i] = ret;
                                                 WalPrint("Response:> retStatus[%d] = %d\n",i,resObj->retStatus[i]);
+						WalInfo("Response:> retStatus[%d] = %d, Response:> paramNames[%d] = %s, Response:> retParamCnt[%d] = %zu\n",i,resObj->retStatus[i],resObj->u.getRes->paramNames[i],resObj->retStatus[i]);
                                         }
 					if(ret != WDMP_SUCCESS)
                                         {
-                                            WalPrint("Non-wildcard get failed. Hence returning...\n");
+                                            WalInfo("Non-wildcard get failed. Hence returning...\n");
                                             break;
                                         }
                                      } else {
-                                        WalPrint("Non-Wildcard count is zero!\n");
+                                        WalInfo("Non-Wildcard count is zero!\n");
                                        }   
 
                                         if(wildcardParamCount > 0)
@@ -155,6 +156,7 @@ void processRequest(char *reqPayload,char *transactionId, char **resPayload)
                                                         WalPrint("Response:> retParamCnt[%d] = %zu\n",index,resObj->u.getRes->retParamCnt[index]);
                                                         resObj->retStatus[index] = ret;
                                                         WalPrint("Response:> retStatus[%d] = %d\n",index,resObj->retStatus[index]);
+							WalInfo("Response:> retStatus[%d] = %d, Response:> paramNames[%d] = %s, Response:> retParamCnt[%d] = %zu \n",index,resObj->retStatus[index],resObj->u.getRes->paramNames[index],resObj->u.getRes->retParamCnt[index]);
                                                         index++;
                                                 }
                                         }
@@ -481,7 +483,7 @@ void processRequest(char *reqPayload,char *transactionId, char **resPayload)
         WalPrint("payload : %s\n",payload);
         *resPayload = payload;
         
-        WalPrint("Response:> Payload = %s\n", *resPayload);
+        WalInfo("Response:> Payload = %s\n", *resPayload);
         
         if(NULL != reqObj)
         {
@@ -607,10 +609,22 @@ WDMP_STATUS validate_parameter(param_t *param, int paramCount, REQ_TYPE type)
                         return WDMP_ERR_INVALID_PARAM;
                 }
 
-                if(strlen(param[i].value) >= MAX_PARAMETERVALUE_LEN)
+                //Increase parameter value to 200k for T2 ReportProfiles
+		if(strcmp(param[i].name, "Device.X_RDKCENTRAL-COM_T2.ReportProfiles") == 0) 
                 {
-                        return WDMP_ERR_INVALID_PARAM;
+                	if(strlen(param[i].value) >= MAX_TELEMETRY_PARAMETERVALUE_LEN)
+			{
+				WalError("T2 reportProfiles SET/SET-ATTRIBUTES is not supported as string size is more than 200k\n");
+				return WDMP_ERR_INVALID_PARAM;
+			}
                 }
+		else
+		{
+                	if(strlen(param[i].value) >= MAX_PARAMETERVALUE_LEN)
+                	{
+                        	return WDMP_ERR_INVALID_PARAM;
+                	}
+		}
 
                 // If input parameter is wildcard ending with "." then send error as wildcard is not supported for TEST_AND_SET
                 if(param[i].name[(strlen(param[i].name)-1)] == '.')
