@@ -53,7 +53,7 @@ void getAttributes(const char *paramName[], const unsigned int paramCount, money
 		WalPrint("parameterName: %s count : %d\n",parameterName,count);
 		for(i = 0; i < count; i++)
 		{
-			WalPrint("compName[%d] : %s, dbusPath[%d] : %s\n", i,compName[i],i, dbusPath[i]);
+			WalInfo("*****getAttributes compName[%d] : %s, dbusPath[%d] : %s\n", i,compName[i],i, dbusPath[i]);
 		  	prepareParamGroups(&ParamGroup,paramCount,cnt1,parameterName,compName[i],dbusPath[i],&compCount);
 		}
         	free_componentDetails(compName,dbusPath,count);
@@ -79,7 +79,7 @@ void getAttributes(const char *paramName[], const unsigned int paramCount, money
 				break;
 			}
 		  	// GET atomic value call
-			WalPrint("index %d\n",index);
+			WalInfo("index %d\n",index);
 		  	ret = getParamAttributes(ParamGroup[cnt1].parameterName, ParamGroup[cnt1].parameterCount, ParamGroup[cnt1].comp_name, ParamGroup[cnt1].dbus_path, timeSpan, attr, index);
 		  	if(ret != CCSP_SUCCESS)
 		  	{
@@ -127,11 +127,11 @@ static int getParamAttributes(char *parameterNames[], int paramCount, char *Comp
 	WalPrint(" ------ Start of getParamAttributes ----\n");
 	parameterNamesLocal = (char **) malloc(sizeof(char *) * paramCount);
 	memset(parameterNamesLocal,0,(sizeof(char *) * paramCount));
-
+	WalInfo("getParamAttributes paramCount = %d\n",paramCount);
 	// Initialize names array with converted index	
 	for (cnt = 0; cnt < paramCount; cnt++)
 	{
-		WalPrint("Before mapping parameterNames[%d] : %s\n",cnt,parameterNames[cnt]);
+		WalInfo("GetParamAttributes Before mapping parameterNames[%d] : %s\n",cnt,parameterNames[cnt]);
 	
 		parameterNamesLocal[cnt] = (char *) malloc(sizeof(char) * (strlen(parameterNames[cnt]) + 1));
 		strcpy(parameterNamesLocal[cnt],parameterNames[cnt]);
@@ -155,7 +155,7 @@ static int getParamAttributes(char *parameterNames[], int paramCount, char *Comp
 			break;
 		}
 
-		WalPrint("After mapping parameterNamesLocal[%d] : %s\n",cnt,parameterNamesLocal[cnt]);
+		WalInfo("GetParamAttributes After mapping parameterNamesLocal[%d] : %s\n",cnt,parameterNamesLocal[cnt]);
 	}
 	
 	if(error != 1)
@@ -170,7 +170,7 @@ static int getParamAttributes(char *parameterNames[], int paramCount, char *Comp
 		}
 		else
 		{
-			WalPrint("sizeAttrArr : %d\n",sizeAttrArr);
+			WalInfo("sizeAttrArr : %d\n",sizeAttrArr);
 			for (cnt = 0; cnt < sizeAttrArr; cnt++)
 			{
 			        

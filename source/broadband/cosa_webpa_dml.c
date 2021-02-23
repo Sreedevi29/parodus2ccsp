@@ -312,7 +312,7 @@ int getWebpaParameterValues(char **parameterNames, int paramCount, int *val_size
     PCOSA_DML_WEBPA             pWebpa    = (PCOSA_DML_WEBPA) hWebpa->pWebpa;
     PCOSA_DML_WEBPA_CONFIG      pWebpaCfg = (PCOSA_DML_WEBPA_CONFIG)pWebpa->pWebpaCfg;
 
-    WalPrint("paramCount = %d\n",paramCount);
+    WalInfo("getWebpaParameterValues paramCount = %d\n",paramCount);
     for(i=0; i<paramCount; i++)
     {
         if(parameterNames[i][strlen(parameterNames[i])-1] == '.')
