@@ -157,7 +157,7 @@ void initComponentCaching(int status)
 	}
 	else
 	{
-		WalPrint("WALInit Thread created Successfully\n");
+		WalInfo("WALInit Thread created Successfully\n");
 	}
 }
 
@@ -267,8 +267,15 @@ static void *WALInit(void *status)
 #endif
 	if(RfcEnable[0] != '\0' && strncmp(RfcEnable, "true", strlen("true")) == 0)
 	{
-	    WebcfgInfo("WebConfig Rfc is enabled, starting WebConfigMultipartTask\n");
-	    initWebConfigMultipartTask((unsigned long) status);
+	    if(!get_global_shutdown()) //g_shutdown is added to avoid twice rfc enable scenario when system ready is received late and rfc is already enabled
+	    {
+	    	WebcfgInfo("WebConfig Rfc is enabled, starting WebConfigMultipartTask\n");
+	    	initWebConfigMultipartTask((unsigned long) status);
+ 	    }
+	    else
+	    {
+		WebcfgInfo("rfc is enabled but g_shutdown is true. This is to avoid twice rfc enable scenario\n");
+	    }
 	}
 	else
 	{

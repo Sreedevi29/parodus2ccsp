@@ -54,11 +54,11 @@ int setRfcEnable(BOOL bValue)
 	PCOSA_DATAMODEL_WEBCONFIG            pMyObject           = (PCOSA_DATAMODEL_WEBCONFIG)g_pCosaBEManager->hWebConfig;
 	char buf[16] = {0};
 	int retPsmSet = CCSP_SUCCESS;
-
+	pMyObject->RfcEnable = bValue; 
 	if(bValue == TRUE)
 	{
 		sprintf(buf, "%s", "true");
-		WebcfgDebug("Received RFC enable. updating g_shutdown\n");
+		WebcfgInfo("Received RFC enable. updating g_shutdown\n");
 		if(pMyObject->RfcEnable == false)
 		{
 			pthread_mutex_lock (get_global_sync_mutex());
