@@ -54,7 +54,8 @@ int setRfcEnable(BOOL bValue)
 	PCOSA_DATAMODEL_WEBCONFIG            pMyObject           = (PCOSA_DATAMODEL_WEBCONFIG)g_pCosaBEManager->hWebConfig;
 	char buf[16] = {0};
 	int retPsmSet = CCSP_SUCCESS;
-	pMyObject->RfcEnable = bValue; 
+	pMyObject->RfcEnable = bValue;
+	WebcfgInfo("pMyObject->RfcEnable is %d\n", pMyObject->RfcEnable); 
 	if(bValue == TRUE)
 	{
 		sprintf(buf, "%s", "true");
@@ -90,9 +91,9 @@ int setRfcEnable(BOOL bValue)
         }
         else
         {
-                WebcfgDebug("psm_set success ret %d for parameter %s and value %s\n", retPsmSet, paramRFCEnable, buf);
+                WebcfgInfo("psm_set success ret %d for parameter %s and value %s\n", retPsmSet, paramRFCEnable, buf);
 		pMyObject->RfcEnable = bValue;
-		WebcfgDebug("pMyObject->RfcEnable is %d\n", pMyObject->RfcEnable);
+		WebcfgInfo("pMyObject->RfcEnable is %d\n", pMyObject->RfcEnable);
 		return 0;
         }
 #endif
