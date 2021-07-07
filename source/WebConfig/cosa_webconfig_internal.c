@@ -55,7 +55,7 @@ int setRfcEnable(BOOL bValue)
 	if(bValue == TRUE)
 	{
 		sprintf(buf, "%s", "true");
-		WebcfgDebug("Received RFC enable. updating g_shutdown\n");
+		WebcfgInfo("Received RFC enable. updating g_shutdown\n");
 		if(pMyObject->RfcEnable == false)
 		{
 			pthread_mutex_lock (get_global_sync_mutex());
@@ -182,10 +182,10 @@ int Set_Webconfig_URL( char *pString)
 int setForceSync(char* pString, char *transactionId,int *pStatus)
 {
 	PCOSA_DATAMODEL_WEBCONFIG            pMyObject           = (PCOSA_DATAMODEL_WEBCONFIG)g_pCosaBEManager->hWebConfig;
-	WebcfgDebug("setForceSync\n");
+	WebcfgInfo("setForceSync\n");
 	memset( pMyObject->ForceSync, 0, sizeof( pMyObject->ForceSync ));
 	AnscCopyString( pMyObject->ForceSync, pString );
-	WebcfgDebug("pMyObject->ForceSync is %s\n", pMyObject->ForceSync);
+	WebcfgInfo("pMyObject->ForceSync is %s\n", pMyObject->ForceSync);
 
 	if(((pMyObject->ForceSync)[0] !='\0') && (strlen(pMyObject->ForceSync)>0))
 	{
@@ -227,7 +227,7 @@ int getForceSync(char** pString, char **transactionId )
 
 	if(((pMyObject->ForceSync)[0] != '\0') && strlen(pMyObject->ForceSync)>0)
 	{
-		WebcfgDebug("%s ----- updating pString ------\n",__FUNCTION__);
+		WebcfgInfo("%s ----- updating pString ------\n",__FUNCTION__);
 		*pString = strdup(pMyObject->ForceSync);
 		WebcfgDebug("%s ----- updating transactionId ------\n",__FUNCTION__);
 		*transactionId = strdup(pMyObject->ForceSyncTransID);
@@ -254,7 +254,7 @@ int getWebConfigParameterValues(char **parameterNames, int paramCount, int *val_
     WebcfgDebug("*********** %s ***************\n",__FUNCTION__);
 
     RFC_ENABLE = Get_RfcEnable();
-    WebcfgDebug("paramCount = %d\n",paramCount);
+    WebcfgInfo("paramCount = %d\n",paramCount);
 
     for(i=0; i<paramCount; i++)
     {
@@ -334,12 +334,12 @@ int getWebConfigParameterValues(char **parameterNames, int paramCount, int *val_
 			      }
                             else if((strcmp(parameterNames[i], WEBCONFIG_PARAM_SUPPORTED_DOCS) == 0) && (RFC_ENABLE == true))
                             {
-                                  WebcfgDebug("B4 Get_Webconfig_Supported_Docs\n");
+                                  WebcfgInfo("B4 Get_Webconfig_Supported_Docs\n");
                                   char* docvalue =  getsupportedDocs();
                                   paramVal[k]->parameterName = strndup(WEBCONFIG_PARAM_SUPPORTED_DOCS, MAX_PARAMETERNAME_LEN);
                                   if( (docvalue != NULL) && strlen(docvalue) >0 )
                                   {
-                                      WebcfgDebug("Webpa get : Datafetched %s\n", docvalue);
+                                      WebcfgInfo("Webpa get : Datafetched %s\n", docvalue);
                                       paramVal[k]->parameterValue = strdup(docvalue);
 				  }
                                   else
@@ -351,7 +351,7 @@ int getWebConfigParameterValues(char **parameterNames, int paramCount, int *val_
                             }
                             else if((strcmp(parameterNames[i], WEBCONFIG_PARAM_SUPPORTED_VERSION) == 0) && (RFC_ENABLE == true))
                             {
-                                  WebcfgDebug("B4 Get_Webconfig_Supported_Version\n");
+                                  WebcfgInfo("B4 Get_Webconfig_Supported_Version\n");
                                   char* versionvalue = getsupportedVersion();
                                   paramVal[k]->parameterName = strndup(WEBCONFIG_PARAM_SUPPORTED_VERSION, MAX_PARAMETERNAME_LEN);
                                   if( (versionvalue != NULL) && strlen(versionvalue) >0 )
@@ -398,7 +398,7 @@ int getWebConfigParameterValues(char **parameterNames, int paramCount, int *val_
                             k++;
                             if(RFC_ENABLE)
                               {
-                                WebcfgDebug("Webpa wildcard get for force sync\n");
+                                WebcfgInfo("Webpa wildcard get for force sync\n");
 				paramVal[k] = (parameterValStruct_t *) malloc(sizeof(parameterValStruct_t));
                                 memset(paramVal[k], 0, sizeof(parameterValStruct_t));
                                 paramVal[k]->parameterName = strndup(WEBCONFIG_PARAM_FORCE_SYNC, MAX_PARAMETERNAME_LEN);
@@ -406,7 +406,7 @@ int getWebConfigParameterValues(char **parameterNames, int paramCount, int *val_
                                 paramVal[k]->type = ccsp_string;
                                 k++;
 
-				WebcfgDebug("Webpa wildcard get for URL\n");
+				WebcfgInfo("Webpa wildcard get for URL\n");
 				paramVal[k] = (parameterValStruct_t *) malloc(sizeof(parameterValStruct_t));
                                 memset(paramVal[k], 0, sizeof(parameterValStruct_t));
                                 paramVal[k]->parameterName = strndup(WEBCONFIG_PARAM_URL, MAX_PARAMETERNAME_LEN);
@@ -540,7 +540,7 @@ int setWebConfigParameterValues(parameterValStruct_t *val, int paramCount, char 
 			}
 			else if((strcmp(val[i].parameterName, WEBCONFIG_PARAM_FORCE_SYNC) == 0) && (RFC_ENABLE == true))
 			{
-				WebcfgDebug("Processing Force Sync param\n");
+				WebcfgInfo("Processing Force Sync param\n");
 				if((val[i].parameterValue !=NULL) && (strlen(val[i].parameterValue)>0))
 				{
 					ret = setForceSync(val[i].parameterValue, transactionId, &session_status);
@@ -548,7 +548,7 @@ int setWebConfigParameterValues(parameterValStruct_t *val, int paramCount, char 
 				}
 				else //pass empty transaction id when Force sync is with empty doc
 				{
-					WebcfgDebug("setWebConfigParameterValues empty setForceSync\n");
+					WebcfgInfo("setWebConfigParameterValues empty setForceSync\n");
 					ret = setForceSync(val[i].parameterValue, "", 0);
 				}
 				if(session_status)
